@@ -16,7 +16,7 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      background-image: url("bg.jpeg");
+      background-image: url("bg.jpeg"); /* replace with your image */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -89,15 +89,17 @@
     }
 
     @keyframes popIn {
-      to {
-        opacity: 1;
-        transform: scale(1.4);
-      }
+      to { opacity: 1; transform: scale(1.4); }
     }
 
   </style>
 </head>
+
 <body>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" src="music.mp3" loop></audio>
+  <!-- Replace 'music.mp3' with your file in the same folder -->
 
   <div class="card">
     <h1>Will you be my Valentine? 💕</h1>
@@ -110,6 +112,7 @@
   <script>
     const noBtn = document.getElementById("no");
     const container = document.querySelector(".buttons");
+    const bgMusic = document.getElementById("bgMusic");
 
     // No button dodges
     function moveNo() {
@@ -149,8 +152,11 @@
     }
     setInterval(createHeart, 400);
 
-    // YES clicked -> dramatic name + exploding hearts
+    // YES clicked -> name + exploding hearts + music
     function sayYes() {
+      // play music
+      bgMusic.play().catch(() => console.log("Autoplay blocked, user interaction needed"));
+
       document.body.innerHTML = `
         <div style="
           position: relative;
@@ -171,7 +177,7 @@
       const nameContainer = document.getElementById("name");
       const name = "RITIKA";
 
-      // Dramatical letter-by-letter
+      // Dramatic letter-by-letter
       name.split("").forEach((char, i) => {
         const span = document.createElement("span");
         span.classList.add("letter");
@@ -182,7 +188,7 @@
 
       // Exploding hearts
       function explodeHearts() {
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 20; i++) {
           const heart = document.createElement("div");
           heart.classList.add("heart");
           heart.style.fontSize = `${16 + Math.random()*24}px`;
