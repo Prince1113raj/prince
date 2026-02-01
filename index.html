@@ -2,24 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Be My Valentine 💘</title>
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       height: 100vh;
       margin: 0;
+      font-family: "Arial", sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: "Arial", sans-serif;
-
-      background-image: url("bg.jpeg"); /* your background image */
+      overflow: hidden;
+      background-image: url("bg.jpeg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
 
-    /* dark overlay for readability */
     body::before {
       content: "";
       position: absolute;
@@ -28,90 +30,174 @@
       z-index: -1;
     }
 
+    .heart {
+      position: absolute;
+      bottom: -20px;
+      font-size: 20px;
+      animation: floatUp linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to   { transform: translateY(-110vh) scale(1.5); opacity: 0; }
+    }
+
     .card {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 40px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 30px 25px;
       border-radius: 20px;
       text-align: center;
+      width: 90%;
+      max-width: 360px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    }
-
-    h1 {
-      margin-bottom: 30px;
-    }
-
-    .buttons {
       position: relative;
-      width: 300px;
-      height: 160px;
-      margin: auto;
+      z-index: 1;
     }
+
+    h1 { margin-bottom: 25px; font-size: 1.6rem; }
+
+    .buttons { position: relative; width: 100%; height: 140px; }
 
     button {
-      padding: 14px 26px;
-      font-size: 18px;
+      padding: 14px 22px;
+      font-size: 16px;
       border: none;
       border-radius: 10px;
       cursor: pointer;
     }
 
-    #yes {
-      background-color: #ff4d6d;
-      color: white;
-    }
-
+    #yes { background-color: #ff4d6d; color: white; }
     #no {
       background-color: #555;
       color: white;
       position: absolute;
+      transition: all 1s linear;
     }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.4rem; }
+      button { font-size: 15px; padding: 12px 18px; }
+    }
+
+    /* Dramatic name animation */
+    .letter {
+      display: inline-block;
+      opacity: 0;
+      transform: scale(0);
+      animation: popIn 0.5s forwards;
+    }
+
+    @keyframes popIn {
+      to {
+        opacity: 1;
+        transform: scale(1.4);
+      }
+    }
+
   </style>
 </head>
-
 <body>
 
   <div class="card">
     <h1>Will you be my Valentine? 💕</h1>
-
     <div class="buttons">
       <button id="yes" onclick="sayYes()">Yes 💖</button>
-      <button id="no" onmouseover="moveNo()">No 🙃</button>
+      <button id="no" onmouseover="moveNo()" ontouchstart="moveNo()">No 🙃</button>
     </div>
   </div>
 
   <script>
-    function moveNo() {
-      const noBtn = document.getElementById("no");
-      const container = document.querySelector(".buttons");
+    const noBtn = document.getElementById("no");
+    const container = document.querySelector(".buttons");
 
+    // No button dodges
+    function moveNo() {
       const maxX = container.clientWidth - noBtn.offsetWidth;
       const maxY = container.clientHeight - noBtn.offsetHeight;
-
       const randomX = Math.random() * maxX;
       const randomY = Math.random() * maxY;
-
       noBtn.style.left = randomX + "px";
       noBtn.style.top = randomY + "px";
     }
 
+    // Slowly drift No button
+    function driftNo() {
+      const maxX = container.clientWidth - noBtn.offsetWidth;
+      const maxY = container.clientHeight - noBtn.offsetHeight;
+      let currentX = parseFloat(getComputedStyle(noBtn).left) || 0;
+      let currentY = parseFloat(getComputedStyle(noBtn).top) || 0;
+      let deltaX = (Math.random() - 0.5) * 20;
+      let deltaY = (Math.random() - 0.5) * 20;
+      let newX = Math.min(Math.max(currentX + deltaX, 0), maxX);
+      let newY = Math.min(Math.max(currentY + deltaY, 0), maxY);
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
+    }
+    setInterval(driftNo, 1200);
+
+    // Floating hearts generator
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.innerHTML = "💖";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+      heart.style.fontSize = (16 + Math.random() * 20) + "px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }
+    setInterval(createHeart, 400);
+
+    // YES clicked -> dramatic name + exploding hearts
     function sayYes() {
       document.body.innerHTML = `
         <div style="
-          display:flex;
-          flex-direction:column;
-          justify-content:center;
-          align-items:center;
-          height:100vh;
-          color:white;
-          font-family:Arial;
-          text-shadow:2px 2px 8px black;
+          position: relative;
+          width: 100vw;
+          height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          text-align: center;
+          color: white;
+          font-family: Arial;
         ">
-          <h1>YAY!!! 💘💘💘</h1>
-          <h2>You’re my Valentine 😍</h2>
+          <h1 id="name"></h1>
         </div>
       `;
-    }
-  </script>
 
+      const nameContainer = document.getElementById("name");
+      const name = "RITIKA";
+
+      // Dramatical letter-by-letter
+      name.split("").forEach((char, i) => {
+        const span = document.createElement("span");
+        span.classList.add("letter");
+        span.style.animationDelay = `${i * 0.3}s`;
+        span.textContent = char;
+        nameContainer.appendChild(span);
+      });
+
+      // Exploding hearts
+      function explodeHearts() {
+        for (let i = 0; i < 15; i++) {
+          const heart = document.createElement("div");
+          heart.classList.add("heart");
+          heart.style.fontSize = `${16 + Math.random()*24}px`;
+          heart.style.left = `${Math.random()*100}vw`;
+          heart.style.top = `${Math.random()*100}vh`;
+          heart.style.animationDuration = `${2 + Math.random()*2}s`;
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 4000);
+        }
+      }
+
+      setInterval(explodeHearts, 500); // keep hearts exploding
+    }
+
+  </script>
 </body>
 </html>
+
